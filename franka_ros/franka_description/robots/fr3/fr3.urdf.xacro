@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="fr3">
+
+  <xacro:include filename="$(find franka_description)/robots/common/franka_robot.xacro"/>
+
+  <!-- Name for this robot -->
+  <xacro:arg name="arm_id" default="fr3" />
+
+  <!-- Should a franka_gripper be mounted at the flange?" -->
+  <xacro:arg name="hand" default="true" />
+  <!-- Positional offset between $(arm_id)_hand -> $(arm_id)_hand_tcp [m]. Only used when hand:=true -->
+  <xacro:arg name="tcp_xyz" default="0 0 0.1034" />
+  <!-- Rotational offset between $(arm_id)_hand -> $(arm_id)_hand_tcp [rad]. Only used when hand:=true -->
+  <xacro:arg name="tcp_rpy" default="0 0 0" />
+
+  <!-- Is the robot being simulated in gazebo?" -->
+  <xacro:arg name="gazebo" default="true" />
+  <!-- If `gazebo` arg is set, to which frame shall $(arm_id)_link0 be parented. Empty string for not fixing at all -->
+  <xacro:arg name="parent" default="world" />
+  <!-- If `gazebo` arg is set and `parent` not empty, what position offset between `parent` & $(arm_id)_link0 -->
+  <xacro:arg name="xyz" default="0 0 0" />
+  <!-- If `gazebo` arg is set and `parent` not empty, what rotation offset between `parent` & $(arm_id)_link0 -->
+  <xacro:arg name="rpy" default="0 0 0" />
+
+  <xacro:franka_robot arm_id="$(arg arm_id)"
+                      joint_limits="${xacro.load_yaml('$(find franka_description)/robots/fr3/joint_limits.yaml')}"
+                      hand="$(arg hand)"
+                      tcp_xyz="$(arg tcp_xyz)"
+                      tcp_rpy="$(arg tcp_rpy)"
+                      gazebo="$(arg gazebo)"
+                      parent="$(arg parent)"
+                      xyz="$(arg xyz)"
+                      rpy="$(arg rpy)">
+  </xacro:franka_robot>
+  <gazebo reference="fr3_hand">
+    <sensor type="camera" name="realsense_d455">
+      <pose> 0.06 0 0.06 0.01 -1.57 3.14 </pose>
+      <always_on>true</always_on>
+      <update_rate>30</update_rate>
+      <camera>
+        <horizontal_fov>1.518436449</horizontal_fov>
+        <lens>
+          <intrinsics>
+            <fx>382.6377</fx>
+            <fy>381.8234</fy>
+            <cx>321.1927</cx>
+            <cy>241.2623</cy>
+            <s>0</s>
+          </intrinsics>
+        </lens>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.007</near>
+          <far>10.0</far>
+        </clip>
+      </camera>
+      <plugin name="realsense_d455_plugin" filename="libgazebo_ros_camera.so">
+        <ros>
+          <namespace>/camera</namespace>
+          <remapping>image_raw:=/camera/color/image_raw</remapping>
+          <remapping>camera_info:=/camera/color/camera_info</remapping>
+        </ros>
+      </plugin>
+    </sensor>
+    <sensor name="depth_camera" type="depth">
+      <pose> 0.06 0 0.06 0.01 -1.57 3.14 </pose>
+      <update_rate>30</update_rate>
+      <camera>
+        <horizontal_fov>1.518436449</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.001</near>
+          <far>10</far>
+        </clip>
+      </camera>
+      <plugin name="camera_plugin" filename="libgazebo_ros_openni_kinect.so">
+        <baseline>0.095</baseline>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>camera_depth</cameraName>
+        <imageTopicName>/camera_depth/color/image_raw</imageTopicName>
+        <cameraInfoTopicName>/camera_depth/color/camera_info</cameraInfoTopicName>
+        <depthImageTopicName>/camera_depth/depth/image_raw</depthImageTopicName>
+        <depthImageInfoTopicName>/camera_depth/depth/camera_info</depthImageInfoTopicName>
+        <pointCloudTopicName>/camera_depth/depth/points</pointCloudTopicName>
+        <frameName>camera_link</frameName>
+        <pointCloudCutoff>0.01</pointCloudCutoff>
+        <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+        <distortionK1>-0.056515</distortionK1>
+        <distortionK2>0.066448</distortionK2>
+        <distortionK3>-0.021259</distortionK3>
+        <distortionT1>-0.000763</distortionT1>
+        <distortionT2>-0.0008797</distortionT2>
+        <CxPrime>0</CxPrime>
+        <Cx>321.1927</Cx>
+        <Cy>241.2623</Cy>
+        <focalLength>382.6377</focalLength>
+        <hackBaseline>0</hackBaseline>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <gazebo>
+    <plugin name="gazebo_grasp_fix" filename="libgazebo_grasp_fix.so">
+      <arm>
+        <arm_name>fr3</arm_name>
+        <palm_link>fr3_leftfinger</palm_link>
+        <palm_link>fr3_rightfinger</palm_link>
+        <gripper_link>fr3_leftfinger</gripper_link>
+        <gripper_link>fr3_rightfinger</gripper_link>
+      </arm>
+
+      <forces_angle_tolerance>100</forces_angle_tolerance>
+      <update_rate>4</update_rate>
+      <grip_count_threshold>4</grip_count_threshold>
+      <max_grip_count>8</max_grip_count>
+      <release_tolerance>0.005</release_tolerance>
+      <disable_collisions_on_attach>false</disable_collisions_on_attach>
+      <contact_topic>__default_topic__</contact_topic>
+    </plugin>
+  </gazebo>
+
+</robot>

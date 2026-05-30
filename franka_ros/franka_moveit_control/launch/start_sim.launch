@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+
+    <include file="$(find franka_gazebo)/launch/fr3.launch"/>
+
+    <include file="$(find franka_moveit)/launch/move_group.launch"/>
+
+    <node pkg="franka_camera"
+        type="d455_camera.py"
+        name="d455_camera"
+        output="screen"/>
+
+    <node pkg="franka_moveit_control"
+        type="cartesian"
+        name="cartesian"
+        output="screen"/>
+
+</launch>

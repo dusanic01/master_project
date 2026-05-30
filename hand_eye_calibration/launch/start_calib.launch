@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!--export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:~/ros_ws/src/master_project/hand_eye_calibration/models--> 
+    <env name="GAZEBO_MODEL_PATH"
+       value="$(env GAZEBO_MODEL_PATH):$(env HOME)/ros_ws/src/master_project/hand_eye_calibration/models"/>
+
+    <include file="$(find franka_gazebo)/launch/fr3.launch"/>
+
+    <include file="$(find franka_moveit)/launch/move_group.launch"/>
+
+    <node pkg="hand_eye_calibration"
+        type="calibration.py"
+        name="calibration"
+        output="screen"/>
+
+    <node pkg="hand_eye_calibration"
+        type="robot_mover"
+        name="robot_mover"
+        output="screen"/>
+
+</launch>

@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="checkerboard">
+    <static>true</static>
+
+    <link name="board">
+      <visual name="visual">
+        <geometry>
+          <plane>
+            <size>0.297 0.21</size>
+          </plane>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://checkerboard/materials/scripts</uri>
+            <uri>model://checkerboard/materials/textures</uri>
+            <name>Checkerboard/Texture</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

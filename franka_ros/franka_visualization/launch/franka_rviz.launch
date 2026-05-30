@@ -1,0 +1,14 @@
+<launch>
+  <!-- URDF/Xacro fajl -->
+  <arg name="robot_description_file" default="$(find franka_description)/robots/fr3/fr3.urdf.xacro"/>
+
+  <!-- Load the robot description -->
+  <param name="robot_description" command="$(find xacro)/xacro $(arg robot_description_file)" />
+
+  <!-- Robot state publisher -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  
+  <!-- RViz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find franka_visualization)/launch/franka_visualization.rviz"/>
+</launch>

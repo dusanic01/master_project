@@ -1,0 +1,14 @@
+material Checkerboard/Texture
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture checkerboard.png
+        scale 1 1
+      }
+    }
+  }
+}
